@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,37 +18,30 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -61,58 +53,71 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val (clicks, setClicks) = remember { mutableStateOf(0) }
+            val mode = remember { mutableStateOf(0) }
             AppTheme(useDarkTheme = true) {
-                // A surface container using the 'background' color from the theme
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    TopAppBar (
-                        title = { Text(text = "Hello World") },
-                        modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer),
-                            )
-
-                    Surface {
+                when (mode.value) {
+                    0 -> {val clicks = remember { mutableStateOf(0) }
                         Column(
-                            modifier = Modifier
-                                .fillMaxSize()
+                            modifier = Modifier.fillMaxSize()
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                            TopAppBar (
+                                title = { Text(text = "Hello World") },
+                                modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer),
+                                navigationIcon = {
+                                    IconButton(onClick = { mode.value = 1 }) {
+                                        Icon(Icons.Filled.Menu, contentDescription = null)
+                                    }
+                                },
+                            )
+                            Surface {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                    ) {
+                                        MyButton(text = "Button 1")
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                    ) {
+                                        MyButton(text = "Button 2")
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                    ) {
+                                        MyButton(text = "Button 3")
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                    ) {
+                                        ClickCounter(clicks, modifier = Modifier.fillMaxWidth())
+                                    }
+                                }
+                                Box(modifier = Modifier
                                     .padding(16.dp)
-                            ) {
-                                MyButton(text = "Button 1")
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                MyButton(text = "Button 2")
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                MyButton(text = "Button 3")
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                ClickCounter(clicks, setClicks, modifier = Modifier.fillMaxWidth())
+                                    .fillMaxSize(),
+                                    contentAlignment = Alignment.BottomEnd
+                                ) {
+                                    Floating_Add_10(clicks)
+                                }
                             }
                         }
-                        Box(modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxSize(),
-                            contentAlignment = Alignment.BottomEnd
-                        ) {
-                            Floating_Add_10(clicks, setClicks)
-                        }
+                    }
+                    1 -> {
+                        ScaffoldTest(colorScheme = MaterialTheme.colorScheme, mode)
+                    }
+                    else -> {
+                        Text(text = "Hello World")
                     }
                 }
             }
@@ -165,7 +170,7 @@ fun MyButton(text: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScaffoldTest(colorScheme: ColorScheme) {
+fun ScaffoldTest(colorScheme: ColorScheme, mode: MutableState<Int>) {
     val colors = listOf(
         colorScheme.primaryContainer,
         colorScheme.secondaryContainer,
@@ -181,7 +186,7 @@ fun ScaffoldTest(colorScheme: ColorScheme) {
                 title = { Text("Simple Scaffold Screen") },
                 navigationIcon = {
                     IconButton(
-                        onClick = { /* "Open nav drawer" */ }
+                        onClick = { mode.value = 0 }
                     ) {
                         Icon(Icons.Filled.Menu, contentDescription = "Localized description")
                     }
@@ -231,15 +236,15 @@ fun ScaffoldTest(colorScheme: ColorScheme) {
 
 
 @Composable
-fun ClickCounter(clicks: Int, setClicks: (Int) -> Unit, modifier: Modifier = Modifier) {
-    FilledTonalButton(onClick = {setClicks(clicks + 1)}, modifier = modifier) {
-        Text("I've been clicked $clicks times", fontSize =16.sp)
+fun ClickCounter(clicks: MutableState<Int>, modifier: Modifier = Modifier) {
+    FilledTonalButton(onClick = {clicks.value++}, modifier = modifier) {
+        Text("I've been clicked ${clicks.value} times", fontSize =16.sp)
     }
 }
 
 @Composable
-fun Floating_Add_10(clicks: Int, setClicks: (Int) -> Unit, modifier: Modifier = Modifier) {
-    LargeFloatingActionButton(onClick = {setClicks(clicks + 10)}, modifier = modifier) {
+fun Floating_Add_10(clicks: MutableState<Int>, modifier: Modifier = Modifier) {
+    LargeFloatingActionButton(onClick = {clicks.value += 10}, modifier = modifier) {
         Text("+10", fontSize = 40.sp, fontWeight = FontWeight(900))
     }
 }
